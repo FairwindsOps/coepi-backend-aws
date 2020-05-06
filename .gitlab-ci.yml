@@ -5,9 +5,6 @@ stages:
 variables:
   AWS_DEFAULT_REGION: us-east-1
   CI_SHA1: $CI_COMMIT_SHA
-  CI_BRANCH: $CI_COMMIT_REF_NAME
-  CI_BUILD_NUM: $CI_JOB_ID
-  CI_TAG: $CI_COMMIT_TAG
 
 image: quay.io/reactiveops/ci-images:v11.2-alpine
 services:
@@ -37,11 +34,7 @@ build:
     - *initialize-dev
     - ./gradlew api-server:jibDockerBuild
     - docker tag api-server ${ECR_REPOSITORY}:${CI_SHA1}
-    - docker tag api-server ${ECR_REPOSITORY}:${CI_TAG}
-    - docker tag api-server ${ECR_REPOSITORY}:${CI_BRANCH}
     - docker push ${ECR_REPOSITORY}:${CI_SHA1}
-    - docker push ${ECR_REPOSITORY}:${CI_TAG}
-    - docker push ${ECR_REPOSITORY}:${CI_BRANCH}
 
 deploy_staging:
   stage: deploy

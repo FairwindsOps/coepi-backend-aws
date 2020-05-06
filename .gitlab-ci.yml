@@ -29,9 +29,9 @@ build:
     - apk update
     - apk add gradle
     - apk add openjdk11
+    - prepare-awscli
 
   script:
-    - *initialize-dev
     - ./gradlew api-server:jibDockerBuild
     - docker tag api-server ${ECR_REPOSITORY}:${CI_SHA1}
     - docker push ${ECR_REPOSITORY}:${CI_SHA1}

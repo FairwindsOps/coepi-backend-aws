@@ -30,8 +30,8 @@ build:
   stage: build
   before_script:
     - apk update
-    - apk add gradle \
-      openjdk11
+    - apk add gradle
+    - apk add openjdk11
 
   script:
     - *initialize-dev

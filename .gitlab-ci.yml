@@ -10,19 +10,6 @@ image: quay.io/reactiveops/ci-images:v11.2-alpine
 services:
   - docker:dind
 
-.aliases:
-  - &initialize-dev |
-    export ROK8S_CONFIG="deploy/development.config"
-    prepare-awscli
-
-  - &initialize-staging |
-    export ROK8S_CONFIG="deploy/staging.config"
-    prepare-awscli
-
-  - &initialize-prod |
-    export ROK8S_CONFIG="deploy/production.config"
-    prepare-awscli
-
 build:
   stage: build
   before_script:
@@ -40,8 +27,11 @@ deploy_staging:
   stage: deploy
   environment:
     name: staging
+  variables:
+    ROK8S_CONFIG: "deploy/staging.config"
+  before_script:
+    - sops --kms ${KSM_KEY_ARN} -d -i values/staging.yaml
   script:
-    - *initialize-staging
     - helm-deploy -f $ROK8S_CONFIG
   only:
     - /^dev-.*/
@@ -50,8 +40,11 @@ deploy_production:
   stage: deploy
   environment:
     name: production
+  variables:
+    ROK8S_CONFIG: "deploy/production.config"
+  before_script:
+    - sops --kms ${KSM_KEY_ARN} -d -i values/production.yaml
   script:
-    - *initialize-prod
     - helm-deploy -f $ROK8S_CONFIG
   only:
     - /^v.*/

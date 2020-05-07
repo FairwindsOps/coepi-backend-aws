@@ -30,7 +30,7 @@ deploy_staging:
   variables:
     ROK8S_CONFIG: "deploy/staging.config"
   before_script:
-    - sops --kms ${KSM_KEY_ARN} -d -i values/staging.yaml
+    - sops --kms ${KSM_KEY_ARN} -d -i deploy/values/staging.yaml
     - aws eks update-kubeconfig --name ${EKS_CLUSTER}
   script:
     - helm-deploy -f $ROK8S_CONFIG
@@ -44,7 +44,7 @@ deploy_production:
   variables:
     ROK8S_CONFIG: "deploy/production.config"
   before_script:
-    - sops --kms ${KSM_KEY_ARN} -d -i values/production.yaml
+    - sops --kms ${KSM_KEY_ARN} -d -i deploy/values/production.yaml
     - aws eks update-kubeconfig --name ${EKS_CLUSTER}
   script:
     - helm-deploy -f $ROK8S_CONFIG

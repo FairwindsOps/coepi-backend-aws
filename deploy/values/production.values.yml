@@ -1,0 +1,33 @@
+image:
+    repository: ENC[AES256_GCM,data:yiddNEBTEk5+B00DRRj13g4wIN8INMvqVgfrB3Z2ed2zHl5c6bi8CSwI1Iz0Dg0UXA50Solo,iv:zu80uFzv4UE4w1SjllXXrPUZA4Prv1OjNhXzW4+GFZs=,tag:1qdO+k8r3zyubOt2KwyodQ==,type:str]
+    tag: ENC[AES256_GCM,data:sVhDa5td,iv:u2+Jm2nYA89YugDBD6iqFk5pcsE9N7gpklxgxv8Y/KY=,tag:2ymC3CnW+X8RMuN29nPSVA==,type:str]
+    pullPolicy: ENC[AES256_GCM,data:fGMpNwYg,iv:zI7hcN9Gdz+kNRZyK7WmCmyJXriuo7L4klLYBmVIUP0=,tag:AruOdpJSXXw/T/5yDE4Vsw==,type:str]
+env:
+    AWS_REGION: ENC[AES256_GCM,data:5dZTXu+EWCVU,iv:SpxXt6VpbBSDEVAMAbyQSQRHlzFlJMOvYjitecEPtt8=,tag:aX4cHpSwV/E8FfINY/ByNQ==,type:str]
+ingress:
+    enabled: ENC[AES256_GCM,data:qyXWow==,iv:4bINozfMw01S23BISDUF2x9ZD1XHSJrEscbncthruQ4=,tag:I5bRfInQyiDYKrEH6MjgDA==,type:str]
+    annotations:
+        kubernetes.io/ingress.class: ENC[AES256_GCM,data:Lg8iO58C1ZG0526+Sg==,iv:+Cphgvre+VO4BbvqcWtV2LADNY36fSZPUiwo4DdHjTg=,tag:d5bCaWgYkoc44sfdSSbZoQ==,type:str]
+        kubernetes.io/tls-acme: ENC[AES256_GCM,data:n8aFbw==,iv:lAe4dLGKWXAJ/4ar7cCOZ4kae/scgjfC5Q00PM2D1mI=,tag:crnheehawSzX0dB8D4fGdA==,type:str]
+    hosts:
+    -   host: ENC[AES256_GCM,data:cF+7GuahXwqff9KJWIkAgsvfmt6D/kVY,iv:tbgblO0br3oX1BFT+ubGT9K+KJJMqAH4J8if131FhS8=,tag:3hqJeFQDMRps+K94m3gzVw==,type:str]
+        paths:
+        - ENC[AES256_GCM,data:Lw==,iv:1KPIUrEle1mgwQtd3FD856lotvmGmV/EAG5+ZPOgJqo=,tag:5ilLwaXeV1/YP5yABwtchg==,type:str]
+    tls:
+    -   secretName: ENC[AES256_GCM,data:KXY1HMmOVISy,iv:Vz/hTBOrSjAox0i9+xO5qZ5SoAwIEw57Vn0yqeIsi+s=,tag:/aQoB8fPpycIC6sTBpEAaA==,type:str]
+        hosts:
+        - ENC[AES256_GCM,data:eAspDm20wQ7g1l0muh8sGpSx8qr3RHI8,iv:pVQycw/D48CrxGjnD4JL32muhkmde0YcI3XN1Gu7IiI=,tag:rtEApD2E86VRxUWTtqdgvg==,type:str]
+        - ENC[AES256_GCM,data:K5p0fJ1OHjmhWfWCx1KK/2lXFiWjW/Csh9GvNe68oQ9GsCR/6AkHK2+8jWfbLpuUuoAZDacR8s3o+i2fsHtVUHH+iQMYwAZnHK6pwmN87kqoMs8tjYxIZ7wcHf+wk3n1jpx8rkDWwHjYTc0FdxVW8gX9Jgxcwo41r1wBII2MaoB40ICrbehUPaycog==,iv:znOGHwFDx7vJ0AB1Y9sXDhOoKUHR5B4xY/wAgg8oybc=,tag:rpyS3nGUBjs8nJ+n7muT+w==,type:comment]
+podAnnotations:
+    iam.amazonaws.com/role: ENC[AES256_GCM,data:MSpffE1sNhXRXl5/FBYn1BI6exyMjZUGWMzFUvLHCULF3TuJPgI5a3yINbqr,iv:z+fAW3b4Gox+3nnJV7wVBT3lzgA2Gpp1SQPbKdP/3pk=,tag:e7X0PKncSv6urKLuFXNi3w==,type:str]
+sops:
+    kms:
+    -   arn: arn:aws:kms:us-east-1:801415626607:key/cf5305cb-38a8-42af-a440-bb2401c760d1
+        created_at: '2020-05-08T14:50:31Z'
+        enc: AQICAHiF4cbL1csXsDgakWqh47dav6ruF4zO1RuSxTQob7rx6AHJ8UyVo1wKbWNk2a752FwDAAAAfjB8BgkqhkiG9w0BBwagbzBtAgEAMGgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMotPt4ShUavJKBIBzAgEQgDs1Ka4B4jqxWeEOrwHFawZmV2wUfFjkQwjT69Tq8VaPIOIOvyJ8Wiz/sivyEqe5yaVCWY4ewW+CUEM6jA==
+    gcp_kms: []
+    lastmodified: '2020-05-08T14:50:31Z'
+    mac: ENC[AES256_GCM,data:+6lcXtE3d7XVVl9k48HTCLw8x4sNdF5yfTtvH0s4tMN3jQe4m2+HJtn44x0KrZsegTPtffqdqLNIm7YoaWZkg5PHh/oAz6CCzSVXohFF9NY5PXiB0t37p3MkMX3v6O8HmvgqXoTMX37DikFKWAeN4OAlxIRSSP5Q7ss0wKWeYK8=,iv:ZaFv32TDIXobPQpiaWliDtaFzPNOpyvG44FuaMQ2yz0=,tag:3ik8BGj9K4lonh1HRGVibA==,type:str]
+    pgp: []
+    unencrypted_suffix: _unencrypted
+    version: 3.0.5

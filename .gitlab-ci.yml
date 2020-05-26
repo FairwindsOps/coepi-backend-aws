@@ -1,6 +1,7 @@
 stages:
   - build
-  - deploy
+  - deploy-staging
+  - deploy-production
 
 variables:
   AWS_DEFAULT_REGION: us-east-1
@@ -24,7 +25,7 @@ build:
     - docker push ${ECR_REPOSITORY}:${CI_SHA1}
 
 deploy_staging:
-  stage: deploy
+  stage: deploy-staging
   environment:
     name: staging
   variables:
@@ -38,7 +39,7 @@ deploy_staging:
     - master
 
 deploy_production:
-  stage: deploy
+  stage: deploy-production
   environment:
     name: production
   variables:

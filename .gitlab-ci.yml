@@ -35,7 +35,7 @@ deploy_staging:
   script:
     - helm-deploy -f $ROK8S_CONFIG
   only:
-    - /^dev-.*/
+    - master
 
 deploy_production:
   stage: deploy
@@ -49,5 +49,5 @@ deploy_production:
   script:
     - helm-deploy -f $ROK8S_CONFIG
   only:
-    - /^v.*/
+    - master
   when: manual

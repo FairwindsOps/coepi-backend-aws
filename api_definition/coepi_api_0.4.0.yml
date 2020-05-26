@@ -9,7 +9,7 @@ info:
     url: https://github.com/Co-Epi/data-models/blob/master/LICENSE
 
 paths:
-  /tcnreport:
+  /tcnreport/0.4.0:
     post:
       summary: Submit symptom or infection report
       description: Users submit symptom / infection reports and reveal the secret TCN Key in their application
@@ -39,41 +39,34 @@ paths:
         '500':
           description: Internal Server Error
 
-
     get:
       summary: Returns a list of reports generated for a given interval number.
 
       description: Interval number is a positive integer that corresponds to a specific fixed time interval and can
-        be calculated as (unix_time / time_interval_ms). Current value of time_interval_ms is (6 * 3600 * 1000) or 6 hours.
-        When not provided, returns the reports corresponding to the latest interval batch.
+        be calculated as (unix_epoch_time_seconds / time_interval_seconds).
+        Current value of time_interval_ms is (6 * 3600) or 6 hours. When not provided, returns the reports
+        corresponding to the latest interval batch.
 
       parameters:
-      - in: query
-        name: date
-        description: Date in RFC3339 standard in UTC, without the time component. If not provided, default value of today's
-          date is used
-        required: false
-        schema:
-          type: string
-          format: date
-        example: 2020-05-04
-
-      - in: query
-        name: intervalNumber
-        description: Positive integer that corresponds to a specific fixed time interval and can
-          be calculated as (unix_time / time_interval_ms)
-        required: false
-        schema:
-          type: integer
-        example: 73457
-      - in: query
-        name: intervalLengthMs
-        description: The interval length in milliseconds used by the client to calculate intervalNumber.
-          The server will respond with a 401 if the interval length does not match the expected length.
-        required: false
-        schema:
-          type: integer
-        example: 21600000
+        - in: query
+          name: intervalNumber
+          description: Positive integer that corresponds to a specific fixed time interval and can
+            be calculated as (unix_epoch_time_seconds / time_interval_seconds). When not provided, current
+            interval number is assumed.
+          required: false
+          schema:
+            type: integer
+            format: int64
+          example: 158874736
+        - in: query
+          name: intervalLength
+          description: The interval length in seconds used by the client to calculate intervalNumber.
+            The server will respond with a 401 if the interval length does not match the expected length.
+          required: false
+          schema:
+            type: integer
+            format: int64
+          example: 21600
 
       x-amazon-apigateway-integration:
         type: aws_proxy
@@ -82,7 +75,7 @@ paths:
 
       responses:
         '200':
-          description: List of infection/symptom reports generated during the specified date and intervalNumber
+          description: List of infection/symptom reports generated during the specified intervalNumber
           content:
             application/json:
               schema:
@@ -92,8 +85,7 @@ paths:
                   format: byte
         '400':
           description: Request Parameter Invalid
-        '401':
-          description: intervalLengthMs is not valid for the specified date
+        '432':
+          description: intervalLength is not valid for the specified intervalNumber
         '500':
           description: Internal Server Error
-

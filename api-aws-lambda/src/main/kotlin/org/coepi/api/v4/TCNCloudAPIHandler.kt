@@ -11,13 +11,15 @@ import org.coepi.api.common.toByteBuffer
 import org.coepi.api.v4.dao.TCNReportsDao
 import org.coepi.api.v4.http.HttpResponse
 import org.coepi.api.v4.http.TCNHttpHandler
-import org.coepi.api.v4.reports.TCNReportService
 import org.slf4j.LoggerFactory
 
 class TCNCloudAPIHandler(
     private val handler: TCNHttpHandler
 ) : RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
-    private val logger = LoggerFactory.getLogger(TCNCloudAPIHandler::class.java)
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(TCNCloudAPIHandler::class.java)
+    }
 
     /**
      * Zero-arg constructor to initialize the class in Lambda.
@@ -25,10 +27,8 @@ class TCNCloudAPIHandler(
     constructor() : this(
         handler = TCNHttpHandler(
             objectMapper = ObjectMapper(),
-            reportService = TCNReportService(
-                clock = Clock.systemUTC(),
-                reportsDao = TCNReportsDao()
-            )
+            clock = Clock.systemUTC(),
+            reportsDao = TCNReportsDao()
         )
     )
 

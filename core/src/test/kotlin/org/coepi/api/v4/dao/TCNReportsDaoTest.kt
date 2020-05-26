@@ -1,5 +1,6 @@
 package org.coepi.api.v4.dao
 
+import org.coepi.api.v4.Intervals
 import org.coepi.api.v4.generateIntervalForTimestamp
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
@@ -7,8 +8,6 @@ import org.junit.jupiter.api.Test
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
 
 @Disabled
 class TCNReportsDaoTest {
@@ -18,11 +17,10 @@ class TCNReportsDaoTest {
 
     @Test
     fun addReport_sanity() {
-        val date = LocalDate.now(ZoneId.of("UTC"))
-        val now = Instant.now().toEpochMilli()
-        val intervalNumber = generateIntervalForTimestamp(now)
-        dao.addReport(reportData, date, intervalNumber, now)
-        val reports = dao.queryReports(date, intervalNumber)
+        val now = Instant.now()
+        val intervalNumber = generateIntervalForTimestamp(now.epochSecond)
+        dao.addReport(reportData, intervalNumber, Intervals.INTERVAL_LENGTH, now.toEpochMilli())
+        val reports = dao.queryReports(intervalNumber, Intervals.INTERVAL_LENGTH)
         Assertions.assertTrue(reports.isNotEmpty())
         println(reports.joinToString("\n"))
     }

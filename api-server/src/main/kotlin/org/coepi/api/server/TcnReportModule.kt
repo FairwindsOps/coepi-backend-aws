@@ -15,22 +15,19 @@ import org.coepi.api.common.toByteBuffer
 import org.coepi.api.v4.dao.TCNReportsDao
 import org.coepi.api.v4.http.HttpResponse
 import org.coepi.api.v4.http.TCNHttpHandler
-import org.coepi.api.v4.reports.TCNReportService
 import java.time.Clock
 
 fun Routing.tcnReports() {
     val tcnHandler = TCNHttpHandler(
-        ObjectMapper(),
-        TCNReportService(
-            Clock.systemUTC(),
-            TCNReportsDao()
-        )
+        objectMapper = ObjectMapper(),
+        clock = Clock.systemUTC(),
+        reportsDao = TCNReportsDao()
     )
 
-    route("/v4/tcnreport") {
+    route("/tcnreport/0.4.0") {
         get {
             // Existing API does not make use of multi-value query parameters.
-            val parameters = parametersOf().toMap().mapValues { (_, v) -> v.first() }
+            val parameters = call.parameters.toMap().mapValues { (_, v) -> v.first() }
             val tcnResponse = tcnHandler.getReport(parameters)
             call.respondWith(tcnResponse)
         }

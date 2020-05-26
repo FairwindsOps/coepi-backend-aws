@@ -1,74 +1,102 @@
 package org.coepi.api.v4.http
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.type.ReferenceType
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
-import org.assertj.core.api.Assertions.assertThat
-import org.coepi.api.Fixtures
-import org.coepi.api.common.toByteBuffer
-import org.coepi.api.v4.dao.TCNReportRecord
-import org.coepi.api.v4.reports.TCNReportService
+import org.coepi.api.Fixtures.createSignedReport
+import org.coepi.api.Fixtures.j1
+import org.coepi.api.Fixtures.j2
+import org.coepi.api.Fixtures.memoData
+import org.coepi.api.Fixtures.memoType
+import org.coepi.api.v4.crypto.ReportVerificationFailed
+import org.coepi.api.v4.crypto.SignedReport
+import org.coepi.api.v4.dao.TCNReportsDao
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import java.nio.ByteBuffer
-import java.time.LocalDate
+import java.time.Clock
 import java.util.*
 
-class TCNHttpHandlerTest {
+class SignedReportTest {
 
-    val reportService = mockk<TCNReportService>()
-    val objectMapper = ObjectMapper()
+    val dao = mockk<TCNReportsDao>(relaxed = true)
 
-    val subject = TCNHttpHandler(objectMapper, reportService)
+    val tcnHttpHandler = TCNHttpHandler(
+        objectMapper = ObjectMapper(),
+        clock = Clock.systemUTC(),
+        reportsDao = dao
+    )
 
     @Test
-    fun `getReport should return Ok with valid inputs`() {
-        // GIVEN
-        val expectedDate = LocalDate.of(1999, 10, 31)
-        val parameters = mapOf(
-            "date" to "1999-10-31"
-        )
-        val expectedReports = listOf(
-            TCNReportRecord(
-                report = "<report data>".toByteArray()
-            )
-        )
-
-        every { reportService.getReports(any(), any()) } returns expectedReports
-
-        // WHEN
-        val response = subject.getReport(parameters)
-
-        // THEN
-        verify { reportService.getReports(expectedDate, null) }
-        assertThat(response).isInstanceOf(Ok::class.java)
-
-        val deserializedResponse = objectMapper.readValue<List<ByteArray>>(response.body!!.array())
-
-        assertThat(deserializedResponse).hasSize(expectedReports.size)
-
-        deserializedResponse
-            .zip(expectedReports)
-            .forEach { (actual, expected) -> assertThat(actual).isEqualTo(expected.report) }
+    fun testPost_validSignature() {
+        val signedReport = createSignedReport()
+        val body = Base64.getEncoder().encode(signedReport.toByteArray())
+        val response = tcnHttpHandler.postReport(ByteBuffer.wrap(body))
+        assertEquals(200, response.status)
     }
 
     @Test
-    fun `postReport should return Ok with valid inputs`() {
-        // GIVEN
-        val report = Fixtures.someBytes()
-        val body = Base64.getEncoder().encode(report).toByteBuffer()
+    fun testPost_invalidSignature() {
+        val signedReport1 = createSignedReport()
+        val signedReport2 = createSignedReport("foo".toByteArray())
 
-        every { reportService.saveReport(any()) } returns Fixtures.mockSavedReport()
+        val newReport = SignedReport(signedReport1.report, signedReport2.signature)
+        val body = Base64.getEncoder().encode(newReport.toByteArray())
+        val response = tcnHttpHandler.postReport(ByteBuffer.wrap(body))
+        assertEquals(401, response.status)
+    }
 
-        // WHEN
-        val response = subject.postReport(body)
+    @Test
+    fun testPost_invalidReportData_tooFewBytes() {
+        val body = Base64.getEncoder().encode("foobar".toByteArray())
+        val response = tcnHttpHandler.postReport(ByteBuffer.wrap(body))
+        assertEquals(400, response.status)
+    }
 
-        // THEN
-        verify { reportService.saveReport(report.toByteBuffer()) }
-        assertThat(response).isInstanceOf(Ok::class.java)
+    @Test
+    fun testPost_invalidReportData_invalidPrefix() {
+        val signedReport = createSignedReport()
+        val extra = "foo"
+        val buff = ByteBuffer.allocate(signedReport.toByteArray().size + extra.length)
+        buff.put(extra.toByteArray())
+        buff.put(signedReport.toByteArray())
+        val body = Base64.getEncoder().encode(buff)
+        val response = tcnHttpHandler.postReport(body)
+
+        assertEquals(400, response.status)
+    }
+
+    @Test
+    fun testPost_invalidReportData_invalidSuffix() {
+        val signedReport = createSignedReport()
+        val extra = "foo"
+        val buff = ByteBuffer.allocate(signedReport.toByteArray().size + extra.length)
+        buff.put(signedReport.toByteArray())
+        buff.put(extra.toByteArray())
+        val body = Base64.getEncoder().encode(buff)
+        val response = tcnHttpHandler.postReport(body)
+
+        assertEquals(400, response.status)
+    }
+
+    @Test
+    fun testSignatureVerificationSuccessful() {
+        val signedReport = createSignedReport()
+        val report = signedReport.verify()
+        assertEquals(memoData, report.memoData)
+        assertEquals(memoType, report.memoType)
+        assertEquals(j1, report.j1.uShort)
+        assertEquals(j2, report.j2.uShort)
+    }
+
+    @Test
+    fun testInvalidSignature() {
+        val signedReport1 = createSignedReport()
+        val signedReport2 = createSignedReport("foo".toByteArray())
+
+        val newReport = SignedReport(signedReport1.report, signedReport2.signature)
+        assertThrows(ReportVerificationFailed::class.java) {
+            newReport.verify()
+        }
     }
 }
-
